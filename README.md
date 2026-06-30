@@ -8,6 +8,7 @@ A simple Expense Tracker web app built using HTML, CSS, and JavaScript. It allow
 *Display list of transactions
 *Calculate  expense totals
 *Delete transactions
+*Save data using localStorage
 
 🛠️ Tech Stack:-
 *HTML
@@ -17,12 +18,6 @@ A simple Expense Tracker web app built using HTML, CSS, and JavaScript. It allow
  📂 How to Run:-
 1.Download or clone the repository
 2.Open `index.html` in your browser
-
-📌 Future Improvements:-
-*Save data using localStorage
-*Add categories (food, travel, etc.)
-*Add charts/graphs for visualization
-*Backend integration for data storage
 
 👨‍💻 Author:-
 Pranav Pendhare

@@ -26,7 +26,49 @@ table.appendChild(row);
 tableDiv.appendChild(table);
 document.querySelector(".expense-container").appendChild(tableDiv);
 
-let totalExpense = [];
+let totalExpense = []; 
+
+function saveExpenses() {
+  localStorage.setItem("expenses", JSON.stringify(totalExpense));
+}
+
+function loadExpenses() {
+  let stored = localStorage.getItem("expenses");
+  if (stored) {
+    totalExpense = JSON.parse(stored);
+    totalExpense.forEach(renderRow);
+    updateTotal();
+  }
+}
+
+function updateTotal() {
+  let sum = totalExpense.reduce((s, item) => s + Number(item.amount), 0);
+  totalAmount.style.display = totalExpense.length ? "block" : "none";
+  totalAmount.innerText = sum;
+}
+
+
+function renderRow(expense) {
+  let column = document.createElement("tr");
+  column.dataset.amount = expense.amount;
+  column.innerHTML = `
+    <td style="word-break: break-word; overflow-wrap: break-word;">${expense.name}</td>
+    <td>${expense.amount}</td>
+    <td>${expense.date}</td>
+    <td><button class="delete-button">Delete</button></td>
+  `;
+  column.style.textAlign = "center";
+  table.appendChild(column);
+
+  column.querySelector(".delete-button").addEventListener("click", function () {
+    totalExpense = totalExpense.filter(function (item) {
+      return item !== expense;
+    });
+    column.remove();
+    updateTotal();
+    saveExpenses();
+  });
+}
 
 addButton.addEventListener("click", function () {
   if (
@@ -38,37 +80,20 @@ addButton.addEventListener("click", function () {
     return;
   }
 
-  totalExpense.push(Number(expenseAmount.value));
+  let expense = {
+    name: expenseName.value,
+    amount: Number(expenseAmount.value),
+    date: expenseDate.value,
+  };
 
-  let column = document.createElement("tr");
-  column.dataset.amount = expenseAmount.value;
-  column.innerHTML = `
-    <td style="word-break: break-word; overflow-wrap: break-word;">${expenseName.value}</td>
-    <td>${expenseAmount.value}</td>
-    <td>${expenseDate.value}</td>
-    <td><button class="delete-button">Delete</button></td>
-  `;
-  column.style.textAlign = "center";
-  table.appendChild(column);
+  totalExpense.push(expense);
+  renderRow(expense);
+  updateTotal();
+  saveExpenses();
 
   expenseName.value = "";
   expenseAmount.value = "";
   expenseDate.value = "";
-
-  totalAmount.style.display = "block";
-  totalAmount.innerText = totalExpense.reduce((sum, val) => sum + val, 0);
 });
 
-table.addEventListener("click", function (e) {
-  if (e.target.classList.contains("delete-button")) {
-    let row = e.target.parentElement.parentElement;
-    let amount = Number(row.dataset.amount);
-
-    let index = totalExpense.indexOf(amount);
-    if (index !== -1) totalExpense.splice(index, 1);
-
-    row.remove();
-
-    totalAmount.innerText = totalExpense.reduce((sum, val) => sum + val, 0);
-  }
-});
+loadExpenses();
